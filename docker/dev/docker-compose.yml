@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+
+  # API Belvo
+  api:
+    build: django/
+    command: sh /scripts/run_web.sh
+    volumes:
+      - ../../api:/app
+      - ./django/scripts:/scripts
+      - ./django/requirements.txt:/app/requirements.txt
+      - ./django/configs/pytest.ini:/app/pytest.ini
+    env_file:
+      - ./django/configs/.env
+    ports:
+      - "8091:5560"

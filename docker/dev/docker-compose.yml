@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
 
-  # API Belvo
+  # API
   api:
     build: django/
     command: sh /scripts/run_web.sh
@@ -15,3 +15,16 @@ services:
       - ./django/configs/.env
     ports:
       - "8091:5560"
+    depends_on:
+      - postgres
+
+  # Postgres BD
+  postgres:
+    build: postgres/
+    environment:
+      - POSTGRES_USER=tangelo
+      - POSTGRES_PASSWORD=mypass
+      - POSTGRES_DB=tangelo_bbdd
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/shared/:/data/shared

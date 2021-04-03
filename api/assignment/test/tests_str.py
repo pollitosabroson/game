@@ -2,7 +2,7 @@ import json
 import logging
 
 import pytest
-from assignment.schemas import conf_schema_response_list
+from assignment.schemas import conf_schema_response_str
 from core.utils import parse_response_content
 from django.urls import reverse
 from rest_framework import status
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.django_db
 @pytest.mark.urls('tangelo.urls')
-class TestvalidateArrays:
+class TestValidateStr:
     """Specific tests for validation values in list."""
 
-    url = reverse('assignments:parse-from-list')
+    url = reverse('assignments:parse-from-str')
     @staticmethod
     def get_success_fixtures():
         """values list for cases where the endpoint
@@ -23,31 +23,27 @@ class TestvalidateArrays:
         """
         return [
             {
-                'value': [[10, 20, 30], 40],
+                'value': '((10 ; 20 ; 30) ; 40)',
                 'validation': {
-                    'content': [10, 20, 30, 40],
-                    'depth': 1
+                    'content': '(10; 20; 30; 40)',
                 }
             },
             {
-                'value': [['A', 20, ['B']], 40],
+                'value': "(('A' ; 20 ; ('B')) ; 40)",
                 'validation': {
-                    'content': ['A', 20, 'B', 40],
-                    'depth': 2
+                    'content': "('A'; 20; 'B'; 40)",
                 }
             },
             {
-                'value': [[10, [[20, [30]]], [40]]],
+                'value': "((10 ; ((20 ; (30))) ; (40)))",
                 'validation': {
-                    'content': [10, 20, 30, 40],
-                    'depth': 4
+                    'content': '(10; 20; 30; 40)'
                 }
             },
             {
-                'value': ['♣', '♦', '♥'],
+                'value': "('♣' ; '♦' ; '♥')",
                 'validation': {
-                    'content': ['♣', '♦', '♥'],
-                    'depth': 0
+                    'content': "('♣'; '♦'; '♥')",
                 }
             },
         ]
@@ -92,7 +88,13 @@ class TestvalidateArrays:
                 client,
                 params=fixtures
             )
-            assert conf_schema_response_list.is_valid(response_content)
+            logger.error('response_content')
+            logger.error(response_content)
+            logger.error('response_status')
+            logger.error(response_status)
+            logger.error('fixtures')
+            logger.error(fixtures)
+            assert conf_schema_response_str.validate(response_content)
             assert status.HTTP_201_CREATED == response_status
             self.validation(response_content, fixtures['validation'])
 

@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'rest_framework',
+    'assignment'
 ]
 
 MIDDLEWARE = [
@@ -75,8 +77,12 @@ WSGI_APPLICATION = 'tangelo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('database_name'),
+        'USER': os.environ.get('database_user'),
+        'PASSWORD': os.environ.get('database_password'),
+        'HOST': os.environ.get('database_host'),
+        'PORT': os.environ.get('database_port'),
     }
 }
 
@@ -119,13 +125,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+DISPLAY_SOLVED_ASSIGNMENTS = 100
+
 # DRF
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # NOQA
+    'PAGE_SIZE': DISPLAY_SOLVED_ASSIGNMENTS
 }
 
 STATIC_URL = '/static/'

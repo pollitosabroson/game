@@ -88,12 +88,6 @@ class TestValidateStr:
                 client,
                 params=fixtures
             )
-            logger.error('response_content')
-            logger.error(response_content)
-            logger.error('response_status')
-            logger.error(response_status)
-            logger.error('fixtures')
-            logger.error(fixtures)
             assert conf_schema_response_str.validate(response_content)
             assert status.HTTP_201_CREATED == response_status
             self.validation(response_content, fixtures['validation'])
